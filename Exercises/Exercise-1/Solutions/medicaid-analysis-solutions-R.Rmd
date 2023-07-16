@@ -1,8 +1,8 @@
 ---
 title: "Medicaid Analysis Solution in R"
 output:
-  html_document: default
   github_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
