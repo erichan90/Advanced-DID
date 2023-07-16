@@ -19,6 +19,17 @@ This exercise will help you learn about the recent DiD literature on settings wi
 
 For R, you will need the following packages: `did`, `dplyr`, `fixest`, `bacondecomp`, and `haven`. For Stata, you will need `csdid`, `drdid`, `reghdfe`, and `bacondecomp`.
 
+```{r}
+packages = c("haven", "tidyverse", "did", "dplyr", "fixest","bacondecomp","haven")
+#check for missing packages; load and install as needed.
+package.check <- lapply(packages, FUN = function(x){
+    if (!require(x, character.only = TRUE)) {
+        install.packages(x, dependencies = TRUE)
+        library(x, character.only = TRUE)
+    }
+})
+```
+
 
 ## Data
 
@@ -36,6 +47,12 @@ library(did)
 library(haven)
 df <- haven::read_dta("https://raw.githubusercontent.com/Mixtape-Sessions/Advanced-DID/main/Exercises/Data/ehec_data.dta")
 ```
+
+
+```{r}
+head(df)
+```
+
 
 
 2.  **Estimate the ATT(g,t) using Callaway and Sant'Anna's estimator**
@@ -146,7 +163,7 @@ To see a situation where negative weights can matter (somewhat) more, drop from 
 
 ```{r no-never-treated}
 ## Re-run the CS results dropping never-treated units
-cs_results <- att_gt(
+cs_results2 <- att_gt(
   yname = "dins",
   tname = "year",
   idname = "stfips",
@@ -154,16 +171,23 @@ cs_results <- att_gt(
   data = df %>% filter(!is.na(yexp2)),
   control_group = "notyettreated"
 )
+```
 
-aggte(cs_results, type = "simple")
 
-es <- aggte(cs_results,
+```{r no-never-treated}
+es2 <- aggte(cs_results2,
   type = "dynamic",
   min_e = -5, max_e = 5
 )
 
-ggdid(es)
+ggdid(es2)
 ```
+
+```{r}
+aggte(cs_results2, type = "simple")
+```
+
+
 
 ```{r}
 # Re-run TWFE dropping the never-treated units
@@ -192,7 +216,7 @@ In the last question, you saw an example where TWFE put a lot of weight on "forb
 
 ```{r}
 ## Re-run the CS results dropping never-treated units and adding dynamic TEs
-cs_results <- att_gt(
+cs_results3 <- att_gt(
   yname = "dins2",
   tname = "year",
   idname = "stfips",
@@ -204,19 +228,24 @@ cs_results <- att_gt(
   control_group = "notyettreated"
 )
 
-aggte(cs_results, type = "simple")
 
-es <- aggte(cs_results,
+es3 <- aggte(cs_results3,
   type = "dynamic",
   min_e = -5, max_e = 5
 )
 
-ggdid(es)
+ggdid(es3)
 ```
+
+
+```{r}
+aggte(cs_results3, type = "simple")
+```
+
 
 ```{r}
 # Re-run TWFE dropping the never-treated units and adding dynamic TEs
-twfe_static <- feols(dins ~ postTreated | stfips + year,
+twfe_static <- feols(dins2 ~ postTreated | stfips + year,
   data = df %>%
     filter(!is.na(yexp2)) %>%
     mutate(relativeTime = year - yexp2) %>%
@@ -227,7 +256,7 @@ summary(twfe_static)
 ```
 
 ```{r}
-bacon(dins ~ postTreated,
+bacon(dins2 ~ postTreated,
   data = df %>%
     filter(!is.na(yexp2)) %>%
     mutate(relativeTime = year - yexp2) %>%

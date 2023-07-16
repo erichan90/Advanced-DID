@@ -6,8 +6,9 @@ output:
 ---
 
 ```{r setup, include=FALSE}
+update.packages("cli")
 knitr::opts_chunk$set(echo = TRUE, warning = F)
-# devtools::install_github("Hemken/Statamarkdown")
+devtools::install_github("Hemken/Statamarkdown")
 library(Statamarkdown)
 ```
 ## Introduction

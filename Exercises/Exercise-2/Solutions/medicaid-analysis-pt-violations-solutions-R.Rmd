@@ -36,7 +36,7 @@ library(dplyr)
 library(did)
 library(haven)
 library(ggplot2)
-library(HonestDiD)
+
 df <- read_dta("https://raw.githubusercontent.com/Mixtape-Sessions/Advanced-DID/main/Exercises/Data/ehec_data.dta")
 
 # Keep years before 2016. Drop the 2016 cohort
@@ -58,6 +58,11 @@ twfe_results <- feols(dins ~ i(year, D, ref = 2013) | stfips + year,
 twfe_results_summary <- summary(twfe_results)
 iplot(twfe_results)
 ```
+```{r}
+twfe_results_summary
+```
+
+
 
 ## 2. Extract the coefficients and standard error from the baseline spec
 
